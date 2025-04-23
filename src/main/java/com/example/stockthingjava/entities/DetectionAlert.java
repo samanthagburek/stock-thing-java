@@ -21,5 +21,17 @@ public class DetectionAlert {
     @ManyToOne
     @JoinColumn(name = "rule_id")
     private DetectionRule rule;
+
+    public String getAlertType(){return alertType;}
+    public String getMessage(){return message;}
+    public LocalDateTime getTimestamp(){return timestamp;}
+    public LogEntry getLogEntry(){return logEntry;}
+    public DetectionRule getRule(){return rule;}
+    public void setId(Long id){ this.id = id; }
+    public void setAlertType(String alertType){ this.alertType = alertType; }
+    public void setMessage(String message){ this.message = message; }
+    public void setTimestamp(LocalDateTime timestamp){ this.timestamp = timestamp; }
+    public void setLogEntry(LogEntry logEntry){ this.logEntry = logEntry; }
+    public void setRule(DetectionRule rule){ this.rule = rule; }
 }
 
