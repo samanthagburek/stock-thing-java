@@ -10,9 +10,7 @@ import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
-import org.pcap4j.packet.IpV4Packet;
-import org.pcap4j.packet.Packet;
-import org.pcap4j.packet.TcpPacket;
+import org.pcap4j.packet.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,23 +36,40 @@ public class PcapProcessorService {
 
         Packet packet;
         while ((packet = handle.getNextPacket()) != null) {
-            // Parse basic IP + TCP info
-            // Ignores non-IP/TCP packets (like UDP, ICMP)- could add functionality if needed
+            // Parse basic IP, TCP, UDP, ICMP info, no Ipv6 support currently
             IpV4Packet ip = packet.get(IpV4Packet.class);
-            TcpPacket tcp = packet.get(TcpPacket.class);
-
-            if (ip != null && tcp != null) {
+            if (ip != null) {
                 LogEntry log = new LogEntry();
                 log.setSourceIp(ip.getHeader().getSrcAddr().getHostAddress());
                 log.setDestinationIp(ip.getHeader().getDstAddr().getHostAddress());
-                log.setSourcePort(tcp.getHeader().getSrcPort().valueAsInt());
-                log.setDestinationPort(tcp.getHeader().getDstPort().valueAsInt());
-                log.setProtocol("TCP");
                 log.setPacketSize(packet.length());
                 log.setTimestamp(LocalDateTime.now());
 
-                log = logEntryRepository.save(log); // save & get ID
+                // Determine protocol and extract ports or types
+                if (packet.contains(TcpPacket.class)) {
+                    TcpPacket tcp = packet.get(TcpPacket.class);
+                    log.setSourcePort(tcp.getHeader().getSrcPort().valueAsInt());
+                    log.setDestinationPort(tcp.getHeader().getDstPort().valueAsInt());
+                    log.setProtocol("TCP");
 
+                } else if (packet.contains(UdpPacket.class)) {
+                    UdpPacket udp = packet.get(UdpPacket.class);
+                    log.setSourcePort(udp.getHeader().getSrcPort().valueAsInt());
+                    log.setDestinationPort(udp.getHeader().getDstPort().valueAsInt());
+                    log.setProtocol("UDP");
+
+                } else if (packet.contains(IcmpV4CommonPacket.class)) {
+                    IcmpV4CommonPacket icmp = packet.get(IcmpV4CommonPacket.class);
+                    log.setProtocol("ICMP");
+                    log.setSourcePort(null); // type Integer allows these to be null
+                    log.setDestinationPort(null);
+                    log.setIcmpType(Integer.valueOf(icmp.getHeader().getType().value()));
+                    log.setIcmpCode(Integer.valueOf(icmp.getHeader().getCode().value()));
+                } else {
+                    return; // Skip non-TCP/UDP/ICMP packets
+                }
+
+                log = logEntryRepository.save(log);
                 runDetectionRules(log);
             }
         }

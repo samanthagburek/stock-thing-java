@@ -13,11 +13,13 @@ public class LogEntry {
 
     private String sourceIp;
     private String destinationIp;
-    private int sourcePort;
-    private int destinationPort;
+    private Integer sourcePort;
+    private Integer destinationPort;
     private String protocol; // e.g., TCP/UDP/ICMP
     private LocalDateTime timestamp;
     private int packetSize;
+    private Integer icmpType;
+    private Integer icmpCode;
 
     @OneToMany(mappedBy = "logEntry", cascade = CascadeType.ALL)
     private List<DetectionAlert> alerts;
@@ -26,21 +28,25 @@ public class LogEntry {
     public LogEntry() {}
     public Long getId() { return id; }
     public String getSourceIp() { return sourceIp; }
-    public int getSourcePort() { return sourcePort; }
+    public Integer getSourcePort() { return sourcePort; }
     public String getDestinationIp() { return destinationIp; }
-    public int getDestinationPort() { return destinationPort; }
+    public Integer getDestinationPort() { return destinationPort; }
     public String getProtocol() { return protocol; }
     public LocalDateTime getTimestamp() { return timestamp; }
     public int getPacketSize() { return packetSize; }
+    public Integer getIcmpType() { return icmpType; }
+    public Integer getIcmpCode() { return icmpCode; }
     public List<DetectionAlert> getAlerts() { return alerts; }
     public void setId(Long id) { this.id = id; }
     public void setSourceIp(String sourceIp) { this.sourceIp = sourceIp; }
-    public void setSourcePort(int sourcePort) { this.sourcePort = sourcePort; }
+    public void setSourcePort(Integer sourcePort) { this.sourcePort = sourcePort; }
     public void setDestinationIp(String destinationIp) { this.destinationIp = destinationIp; }
-    public void setDestinationPort(int destinationPort) { this.destinationPort = destinationPort; }
+    public void setDestinationPort(Integer destinationPort) { this.destinationPort = destinationPort; }
     public void setProtocol(String protocol) { this.protocol = protocol; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
     public void setAlerts(List<DetectionAlert> alerts) { this.alerts = alerts; }
     public void setPacketSize(int packetSize) { this.packetSize = packetSize; }
+    public void setIcmpCode(Integer icmpCode) { this.icmpCode = icmpCode; }
+    public void setIcmpType(Integer icmpType) { this.icmpType = icmpType; }
 }
 
