@@ -22,6 +22,8 @@ public class LogEntry {
     @OneToMany(mappedBy = "logEntry", cascade = CascadeType.ALL)
     private List<DetectionAlert> alerts;
 
+    // could use Lombok
+    public LogEntry() {}
     public Long getId() { return id; }
     public String getSourceIp() { return sourceIp; }
     public int getSourcePort() { return sourcePort; }

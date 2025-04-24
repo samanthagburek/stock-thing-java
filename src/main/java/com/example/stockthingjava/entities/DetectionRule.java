@@ -21,7 +21,8 @@ public class DetectionRule {
     @OneToMany(mappedBy = "rule", cascade = CascadeType.ALL)
     private List<DetectionAlert> alerts;
 
-
+    // could use Lombok
+    public DetectionRule() {}
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }

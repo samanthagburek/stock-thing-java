@@ -8,20 +8,22 @@ import java.time.LocalDateTime;
 public class DetectionAlert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // primary key
 
     private String alertType; // e.g., "Port Scan", "DDoS", etc.
     private String message;
     private LocalDateTime timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "log_entry_id")
+    @JoinColumn(name = "log_entry_id") // foreign key in log entry class-maps to id
     private LogEntry logEntry;
 
     @ManyToOne
-    @JoinColumn(name = "rule_id")
+    @JoinColumn(name = "rule_id") // foreign key in Detection rule class-maps to id
     private DetectionRule rule;
 
+    // could use Lombok to reduce boilerplate
+    public DetectionAlert() {}
     public String getAlertType(){return alertType;}
     public String getMessage(){return message;}
     public LocalDateTime getTimestamp(){return timestamp;}
