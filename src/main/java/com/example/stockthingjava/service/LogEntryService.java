@@ -1,6 +1,7 @@
 package com.example.stockthingjava.service;
 
 import com.example.stockthingjava.entities.DetectionAlert;
+import com.example.stockthingjava.entities.DetectionRule;
 import com.example.stockthingjava.entities.LogEntry;
 import com.example.stockthingjava.repository.DetectionAlertRepository;
 import com.example.stockthingjava.repository.DetectionRuleRepository;
@@ -68,5 +69,51 @@ public class LogEntryService {
             detectionAlertRepository.save(alert);
         }
     }
+
+    @Autowired
+    private DetectionRuleRepository detectionRuleRepository;
+
+    //  this is test code for running attack simulations and testing the rules
+    public LogEntry saveAndDetect(LogEntry entry) {
+        LogEntry saved = logEntryRepository.save(entry);
+        runDetectionRules(saved);
+        return saved;
+    }
+
+    public void runDetectionRules(LogEntry newLog) {
+        List<DetectionRule> rules = detectionRuleRepository.findAll()
+                .stream().filter(DetectionRule::isEnabled).toList();
+
+        for (DetectionRule rule : rules) {
+            if ("Rapid Port Scan".equals(rule.getName())) {
+                detectPortScan(newLog, rule);
+            }
+            // add more rules later if you want
+        }
+    }
+
+    private void detectPortScan(LogEntry newLog, DetectionRule rule) {
+        LocalDateTime cutoff = newLog.getTimestamp().minusSeconds(rule.getTimeWindowSeconds());
+
+        List<LogEntry> recent = logEntryRepository.findRecentLogsBySourceIp(
+                newLog.getSourceIp(), cutoff);
+
+        long uniquePorts = recent.stream()
+                .map(LogEntry::getDestinationPort)
+                .distinct()
+                .count();
+
+        if (uniquePorts >= rule.getThreshold()) {
+            DetectionAlert alert = new DetectionAlert();
+            alert.setRule(rule);
+            alert.setLogEntry(newLog);
+            alert.setAlertType("PORT_SCAN");
+            alert.setMessage("Triggered: " + rule.getName());
+            alert.setTimestamp(LocalDateTime.now());
+
+            detectionAlertRepository.save(alert);
+        }
+    }
+
 }
 

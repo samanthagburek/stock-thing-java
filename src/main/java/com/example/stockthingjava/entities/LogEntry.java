@@ -1,5 +1,6 @@
 package com.example.stockthingjava.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class LogEntry {
     private Integer icmpType;
     private Integer icmpCode;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "logEntry", cascade = CascadeType.ALL)
     private List<DetectionAlert> alerts;
 
