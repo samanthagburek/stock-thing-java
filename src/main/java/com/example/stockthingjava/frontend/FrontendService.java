@@ -12,7 +12,7 @@ public class FrontendService {
 
     public void fetchDetectionRules(FrontendCallback callback) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/api/detection-rules"))
+                .uri(URI.create(BASE_URL + "/api/rules"))
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
