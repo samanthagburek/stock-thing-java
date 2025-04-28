@@ -20,4 +20,19 @@ to run the application, now simplly:
 ```bash
 docker compose up --build
 ```
-When future dependency changes, only need to modify the Dockerfile 
+When future dependency changes, only need to modify the Dockerfile
+
+## Sample DB entry:
+```bash
+curl -X POST http://localhost:8080/api/rules \
+    -H "Content-Type: application/json" \
+    -d '{
+        "description": "dummy description",
+        "enabled": true,
+        "name": "Rapid Port Scan",
+        "rule_logic": "UNIQUE_DEST_PORTS",
+        "threshold": 10,
+        "time_window_seconds": 1
+    }'
+
+```
