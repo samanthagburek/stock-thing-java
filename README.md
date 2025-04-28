@@ -36,3 +36,8 @@ curl -X POST http://localhost:8080/api/rules \
     }'
 
 ```
+
+## Next step...
+- cannot dockerize java GUI (maybe you can but that is kinda weird)
+- I suggest migrating the GUI to web served. (That's more modern anyways)
+- maybe create a separate frontend repo
