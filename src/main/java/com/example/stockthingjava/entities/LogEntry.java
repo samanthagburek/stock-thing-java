@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-// ALTER TABLE log_entry ALTER COLUMN source_port DROP NOT NULL;
-// ALTER TABLE log_entry ALTER COLUMN destination_port DROP NOT NULL;
-// ALTER TABLE log_entry ALTER COLUMN icmp_type DROP NOT NULL;
-// ALTER TABLE log_entry ALTER COLUMN icmp_code DROP NOT NULL;
+
 @Entity
 public class LogEntry {
     @Id

@@ -13,13 +13,6 @@ services:
     depends_on:
       - db
 
-  frontend:
-    build:
-      context: .  # we should move frontend into a nested dir
-    command: ./mvnw clean javafx:run  # The command to run your JavaFX frontend
-    depends_on:
-      - backend  # Ensure frontend starts after backend (optional)
-
   db:
     image: postgres:latest
     environment:
@@ -27,9 +20,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
 
 volumes:
   postgres_data:
