@@ -1,10 +1,17 @@
 package com.example.stockthingjava.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class DetectionRule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,24 +25,8 @@ public class DetectionRule {
     private int threshold;           // Optional: e.g., 10 connections
     private int timeWindowSeconds;   // e.g., 1 second window
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "rule", cascade = CascadeType.ALL)
     private List<DetectionAlert> alerts;
-
-    // could use Lombok
-    public DetectionRule() {}
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public String getRuleLogic() { return ruleLogic; }
-    public boolean isEnabled() { return enabled; }
-    public int getThreshold() { return threshold; }
-    public int getTimeWindowSeconds() { return timeWindowSeconds; }
-    public List<DetectionAlert> getAlerts() { return alerts; }
-
-    public void setName(String name) { this.name = name; }
-    public void setDescription(String description) { this.description = description; }
-    public void setRuleLogic(String ruleLogic) { this.ruleLogic = ruleLogic; }
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
-    public void setThreshold(int threshold) { this.threshold = threshold; }
 }
 

@@ -1,10 +1,18 @@
 package com.example.stockthingjava.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class DetectionAlert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,25 +23,13 @@ public class DetectionAlert {
     private LocalDateTime timestamp;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "log_entry_id") // foreign key in log entry class-maps to id
     private LogEntry logEntry;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "rule_id") // foreign key in Detection rule class-maps to id
     private DetectionRule rule;
-
-    // could use Lombok to reduce boilerplate
-    public DetectionAlert() {}
-    public String getAlertType(){return alertType;}
-    public String getMessage(){return message;}
-    public LocalDateTime getTimestamp(){return timestamp;}
-    public LogEntry getLogEntry(){return logEntry;}
-    public DetectionRule getRule(){return rule;}
-    public void setId(Long id){ this.id = id; }
-    public void setAlertType(String alertType){ this.alertType = alertType; }
-    public void setMessage(String message){ this.message = message; }
-    public void setTimestamp(LocalDateTime timestamp){ this.timestamp = timestamp; }
-    public void setLogEntry(LogEntry logEntry){ this.logEntry = logEntry; }
-    public void setRule(DetectionRule rule){ this.rule = rule; }
 }
 

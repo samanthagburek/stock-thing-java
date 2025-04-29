@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LogEntryService {
@@ -113,6 +114,10 @@ public class LogEntryService {
 
             detectionAlertRepository.save(alert);
         }
+    }
+
+    private void detectRestrictedPorts(LogEntry newLog, DetectionRule rule) {
+
     }
 
 }
