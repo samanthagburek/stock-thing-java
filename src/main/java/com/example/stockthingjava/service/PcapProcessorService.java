@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class PcapProcessorService {
@@ -25,10 +24,7 @@ public class PcapProcessorService {
     private LogEntryRepository logEntryRepository;
 
     @Autowired
-    private DetectionRuleRepository detectionRuleRepository;
-
-    @Autowired
-    private DetectionAlertRepository detectionAlertRepository;
+    private DetectionEngineService detectionEngineService;
 
     // goes through a .pcap file, parses each packet and logs data into the db
     public void processPcap(File file) throws PcapNativeException, NotOpenException {
@@ -70,53 +66,11 @@ public class PcapProcessorService {
                 }
 
                 log = logEntryRepository.save(log);
-                runDetectionRules(log);
+                detectionEngineService.runDetectionRules(log);
             }
         }
 
         handle.close();
-    }
-
-    private void runDetectionRules(LogEntry newLog) {
-        // goes through all detection rules and filters which ones are enabled
-        List<DetectionRule> rules = detectionRuleRepository.findAll()
-                .stream().filter(DetectionRule::isEnabled).toList();
-
-        // key part going through each rule and checking if it was violated
-        for (DetectionRule rule : rules) {
-            // need to add more functions that check these rules
-            if ("Rapid Port Scan".equals(rule.getName())) {
-                detectPortScan(newLog, rule);
-            }
-        }
-    }
-
-    // only rule implemented currently is detecting a port scan
-    private void detectPortScan(LogEntry newLog, DetectionRule rule) {
-        // sets time window based on what is set in the rule
-        LocalDateTime cutoff = newLog.getTimestamp().minusSeconds(rule.getTimeWindowSeconds());
-
-        // queries db for recent traffic in that cutoff time w/ the same ip address
-        List<LogEntry> recent = logEntryRepository.findRecentLogsBySourceIp(
-                newLog.getSourceIp(), cutoff);
-
-        // counts the distinct ports touched in that window
-        long uniquePorts = recent.stream()
-                .map(LogEntry::getDestinationPort)
-                .distinct()
-                .count();
-
-        // if port overrides threshold then send alert
-        if (uniquePorts >= rule.getThreshold()) {
-            DetectionAlert alert = new DetectionAlert();
-            alert.setRule(rule);
-            alert.setLogEntry(newLog);
-            alert.setAlertType("PORT_SCAN");
-            alert.setMessage("Triggered: " + rule.getName());
-            alert.setTimestamp(LocalDateTime.now());
-
-            detectionAlertRepository.save(alert);
-        }
     }
 }
 

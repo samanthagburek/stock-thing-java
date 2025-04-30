@@ -3,6 +3,7 @@ package com.example.stockthingjava.controller;
 import com.example.stockthingjava.entities.DetectionAlert;
 import com.example.stockthingjava.entities.LogEntry;
 import com.example.stockthingjava.service.DetectionAlertService;
+import com.example.stockthingjava.service.DetectionEngineService;
 import com.example.stockthingjava.service.LogEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,10 @@ public class RuleSimulationController {
     private LogEntryService logEntryService;
 
     @Autowired
-    private DetectionAlertService detectionAlertService; // add this
+    private DetectionAlertService detectionAlertService;
+
+    @Autowired
+    private DetectionEngineService detectionEngineService;
 
     @PostMapping("/attack")
     public List<DetectionAlert> simulatePortScanAttack() {
@@ -50,12 +54,11 @@ public class RuleSimulationController {
 
         if (!entries.isEmpty()) {
             LogEntry finalEntry = entries.get(entries.size() - 1); // Get the latest log entry
-            logEntryService.runDetectionRules(finalEntry); // Trigger rule detection
+            detectionEngineService.runDetectionRules(finalEntry); // Trigger rule detection
         }
 
         // Return any triggered alerts
         return detectionAlertService.getAllAlerts();
     }
-
 }
 
