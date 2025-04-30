@@ -1,5 +1,6 @@
 package com.example.stockthingjava.service;
 
+import com.example.stockthingjava.dto.DetectionRulePatchDto;
 import com.example.stockthingjava.entities.DetectionRule;
 import com.example.stockthingjava.repository.DetectionRuleRepository;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,27 @@ public class DetectionRuleService {
                 })
                 .orElseThrow(() -> new RuntimeException("Rule not found"));
     }
+
+    public DetectionRule patchRule(Long id, DetectionRulePatchDto patch) {
+        return detectionRuleRepository.findById(id)
+                .map(rule -> {
+                    if (patch.getName() != null) {
+                        rule.setName(patch.getName());
+                    }
+                    if (patch.getDescription() != null) {
+                        rule.setDescription(patch.getDescription());
+                    }
+                    if (patch.getThreshold() != null) {
+                        rule.setThreshold(patch.getThreshold());
+                    }
+                    if (patch.getEnabled() != null) {
+                        rule.setEnabled(patch.getEnabled());
+                    }
+                    return detectionRuleRepository.save(rule);
+                })
+                .orElseThrow(() -> new RuntimeException("Rule not found"));
+    }
+
 
     public void deleteRule(Long id) {
         detectionRuleRepository.deleteById(id);

@@ -1,5 +1,6 @@
 package com.example.stockthingjava.controller;
 
+import com.example.stockthingjava.dto.DetectionRulePatchDto;
 import com.example.stockthingjava.entities.DetectionRule;
 import com.example.stockthingjava.service.DetectionRuleService;
 import org.springframework.http.ResponseEntity;
@@ -49,4 +50,15 @@ public class DetectionRuleController {
         detectionRuleService.deleteRule(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<DetectionRule> patchRule(@PathVariable Long id, @RequestBody DetectionRulePatchDto patchDto) {
+        try {
+            DetectionRule updated = detectionRuleService.patchRule(id, patchDto);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
