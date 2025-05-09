@@ -12,6 +12,21 @@ to build from
 rn a working endpoint to test is /api/rulesimulate/attack which stimulates a port scan attack which 
 is currently a rule in the db 
 
+## setup guide
+first, Maven build and generate the .JAR file:
+```bash
+./mvnw clean package -DskipTests
+```
+
+then, use docker to launch the backend support:
+```bash
+sudo docker compose up --build
+```
+once the containers are built once, in the future, the faster launch command is
+```bash
+sudo docker compose up
+```
+
 ## Update: Application dockerized.
 style follows that of the official sample project, consisting of:
 - [the sample repo](https://github.com/spring-projects/spring-petclinic)
