@@ -1,4 +1,4 @@
-# 1. Build Stage: Use a full JDK with Maven. This is the style from sample project
+# 1. Build Stage: Use a full JDK with Maven. This is the style from the sample project.
 FROM eclipse-temurin:21-jdk-jammy AS builder
 
 WORKDIR /build
@@ -19,17 +19,19 @@ RUN ./mvnw package -DskipTests
 
 # 2. Runtime Stage: Use a lightweight JRE
 FROM eclipse-temurin:21-jre-jammy
+USER root
 
+# Install libpcap and other dependencies
+RUN apt-get update && apt-get install -y libpcap-dev
+# Ensure the library path is set correctly for JNA
+ENV JNA_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
+# Set working directory and create a non-root user
 WORKDIR /app
 
-# Create non-root user (security best practice)
-RUN adduser --disabled-password --gecos "" appuser
-USER appuser
-
-# Copy built jar from builder stage
+# Copy built JAR from builder stage
 COPY --from=builder /build/target/*.jar app.jar
 
-# Expose app port, no changes
+# Expose app port
 EXPOSE 8080
 
 # Run the app, entry points consistent with old Dockerfile
