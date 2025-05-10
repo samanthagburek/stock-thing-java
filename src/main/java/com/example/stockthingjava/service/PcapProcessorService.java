@@ -28,13 +28,20 @@ public class PcapProcessorService {
 
     // goes through a .pcap file, parses each packet and logs data into the db
     public void processPcap(File file) throws PcapNativeException, NotOpenException {
+        System.out.println("\n\n\tprocessPcap func called\n\n");
+
         PcapHandle handle = Pcaps.openOffline(file.getAbsolutePath());
 
         Packet packet;
         while ((packet = handle.getNextPacket()) != null) {
+
+            System.out.println("\n\n\tPacket Protocol Type: " + packet.getClass().getSimpleName()+"\n\n");
+
+
             // Parse basic IP, TCP, UDP, ICMP info, no Ipv6 support currently
             IpV4Packet ip = packet.get(IpV4Packet.class);
             if (ip != null) {
+                System.out.println("\n\n\tWe determined non-null ip\n\n");
                 LogEntry log = new LogEntry();
                 log.setSourceIp(ip.getHeader().getSrcAddr().getHostAddress());
                 log.setDestinationIp(ip.getHeader().getDstAddr().getHostAddress());
@@ -43,6 +50,7 @@ public class PcapProcessorService {
 
                 // Determine protocol and extract ports or types
                 if (packet.contains(TcpPacket.class)) {
+                    System.out.println("\n\n\tWe detected TCP packet here\n\n");
                     TcpPacket tcp = packet.get(TcpPacket.class);
                     log.setSourcePort(tcp.getHeader().getSrcPort().valueAsInt());
                     log.setDestinationPort(tcp.getHeader().getDstPort().valueAsInt());
@@ -62,6 +70,8 @@ public class PcapProcessorService {
                     log.setIcmpType(Integer.valueOf(icmp.getHeader().getType().value()));
                     log.setIcmpCode(Integer.valueOf(icmp.getHeader().getCode().value()));
                 } else {
+                    System.out.println("\n\n\tnon-Attack trigger type packet detected. Skip.\n\n");
+
                     return; // Skip non-TCP/UDP/ICMP packets
                 }
 

@@ -27,12 +27,13 @@ public class PcapUploadController {
             multipartFile.transferTo(tempFile);
 
             // Process the file
+            System.out.println("\n\t"+tempFile.toString()+ " is the file we are trying to process right now\n\n");
             pcapProcessorService.processPcap(tempFile.toFile());
 
             return ResponseEntity.ok("PCAP processed successfully.");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("!!!Error: " + e.getMessage());
+            return ResponseEntity.status(500).body("There Is An Error!!! " + e.getMessage());
         }
     }
 }
